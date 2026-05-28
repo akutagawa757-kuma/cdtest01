@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code 説明書</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Archivo+Black&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    /* ========== MEMPHIS FULL ========== */
+    :root {
+      --mp-black:     #0E0E0E;
+      --mp-white:     #FFFFFF;
+      --mp-cream:     #FFF9E8;
+      --mp-pink:      #FF3D9A;
+      --mp-turquoise: #00D4C8;
+      --mp-yellow:    #FFDE3D;
+      --mp-red:       #FF4136;
+      --mp-blue:      #2E7DFF;
+      --mp-purple:    #9D3DFF;
+      --text-main:    var(--mp-black);
+      --text-inv:     var(--mp-white);
+      --mp-shadow:    8px 8px 0 var(--mp-black);
+      --mp-shadow-sm: 4px 4px 0 var(--mp-black);
+      --color-code-bg: #1E1E2E;
+      --color-code-fg: #CDD6F4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+      font-weight: 400;
+      line-height: 1.8;
+      letter-spacing: 0.01em;
+      color: var(--text-main);
+      background-color: var(--mp-cream);
+      background-image: radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: -80px; left: -80px;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: var(--mp-pink);
+      z-index: -1;
+      opacity: 0.95;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      bottom: -100px; right: -100px;
+      width: 0; height: 0;
+      border-left: 180px solid transparent;
+      border-right: 180px solid transparent;
+      border-bottom: 320px solid var(--mp-turquoise);
+      transform: rotate(18deg);
+      z-index: -1;
+      opacity: 0.9;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Archivo Black', 'Poppins', sans-serif;
+      font-weight: 900;
+      line-height: 1.0;
+      text-transform: uppercase;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+
+    /* ナビゲーション */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--mp-black);
+      border-bottom: 4px solid var(--mp-yellow);
+      z-index: 100;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      transition: none;
+    }
+    .nav__logo {
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--mp-white);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'Archivo Black', sans-serif;
+    }
+    .nav__links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav__links a {
+      color: var(--mp-white);
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 0.25rem 0.75rem;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .nav__links a:hover {
+      background: var(--mp-pink);
+      color: var(--mp-black);
+    }
+
+    /* セクション共通 */
+    .section { padding: 5rem 2rem; position: relative; }
+    .section__inner { max-width: 1080px; margin: 0 auto; position: relative; }
+
+    .section__title {
+      font-family: 'Archivo Black', 'Poppins', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      line-height: 1.0;
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+      color: var(--mp-black);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .section__title .material-icons {
+      font-size: 2.2rem;
+      color: var(--mp-black);
+      background: var(--mp-yellow);
+      border: 3px solid var(--mp-black);
+      padding: 0.3rem;
+      box-shadow: var(--mp-shadow-sm);
+      display: inline-block;
+      transform: rotate(-5deg);
+    }
+    .section__lead {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--mp-black);
+      margin-bottom: 2rem;
+      font-weight: 700;
+    }
+
+    /* ヒーロー */
+    .section--hero {
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 8rem;
+      background: var(--mp-cream);
+      position: relative;
+      overflow: hidden;
+    }
+    .section--hero .section__inner { text-align: center; }
+
+    .hero__badge {
+      display: inline-block;
+      background: var(--mp-turquoise);
+      color: var(--mp-black);
+      font-size: 0.75rem;
+      font-weight: 900;
+      padding: 0.4rem 1rem;
+      border: 3px solid var(--mp-black);
+      box-shadow: var(--mp-shadow-sm);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transform: rotate(-2deg);
+      display: inline-block;
+      font-family: 'Archivo Black', sans-serif;
+    }
+
+    .section--hero h1 {
+      font-family: 'Archivo Black', 'Poppins', sans-serif;
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 900;
+      line-height: 1.0;
+      color: var(--mp-white);
+      display: inline-block;
+      background: var(--mp-pink);
+      padding: 0.5rem 1.5rem;
+      transform: rotate(-2deg);
+      box-shadow: var(--mp-shadow);
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+    }
+
+    .section--hero .section__lead {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--mp-black);
+      max-width: 580px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .hero__meta {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .hero__meta-item {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--mp-black);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: var(--mp-yellow);
+      border: 2px solid var(--mp-black);
+      padding: 0.3rem 0.75rem;
+      box-shadow: 3px 3px 0 var(--mp-black);
+    }
+    .hero__meta-item .material-icons {
+      font-size: 1rem;
+      background: none;
+      border: none;
+      padding: 0;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* コマンドセクション */
+    .section--commands { background: var(--mp-white); }
+    .cmd-group { margin-top: 2rem; }
+    .cmd-group + .cmd-group { margin-top: 3.5rem; }
+
+    .cmd-group__label {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mp-white);
+      background: var(--mp-blue);
+      border: 2px solid var(--mp-black);
+      box-shadow: var(--mp-shadow-sm);
+      padding: 0.3rem 0.8rem;
+      margin-bottom: 0.75rem;
+      display: inline-block;
+      transform: rotate(-1deg);
+    }
+
+    .cmd-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+      border: 3px solid var(--mp-black);
+      box-shadow: var(--mp-shadow);
+    }
+    .cmd-table th {
+      background: var(--mp-black);
+      color: var(--mp-yellow);
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 900;
+      text-align: left;
+      padding: 0.7rem 1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-bottom: 3px solid var(--mp-yellow);
+    }
+    .cmd-table td {
+      padding: 0.8rem 1rem;
+      border-bottom: 2px solid var(--mp-black);
+      vertical-align: top;
+      font-size: 0.95rem;
+      background: var(--mp-white);
+    }
+    .cmd-table tr:nth-child(even) td { background: var(--mp-cream); }
+    .cmd-table tr:last-child td { border-bottom: none; }
+    .cmd-table tr:hover td { background: var(--mp-yellow); }
+    .cmd-table td:first-child { width: 42%; border-right: 2px solid var(--mp-black); }
+
+    code {
+      font-family: 'Consolas', 'SFMono-Regular', 'Menlo', monospace;
+      background: var(--color-code-bg);
+      color: var(--color-code-fg);
+      padding: 0.15em 0.5em;
+      border: 2px solid var(--mp-black);
+      font-size: 0.875em;
+      word-break: break-all;
+    }
+
+    /* スラッシュセクション */
+    .section--slash { background: var(--mp-turquoise); }
+
+    .slash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+      margin-top: 2.5rem;
+    }
+
+    .slash-card {
+      background: var(--mp-white);
+      border: 3px solid var(--mp-black);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      box-shadow: var(--mp-shadow);
+      transform: rotate(-1.5deg);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+    .slash-card:nth-child(4n+1) { background: var(--mp-yellow); transform: rotate(-2deg); }
+    .slash-card:nth-child(4n+2) { background: var(--mp-white); transform: rotate(1.5deg); }
+    .slash-card:nth-child(4n+3) { background: var(--mp-pink); color: var(--mp-white); transform: rotate(-1deg); }
+    .slash-card:nth-child(4n+4) { background: var(--mp-cream); transform: rotate(2.5deg); }
+    .slash-card:hover {
+      transform: rotate(-3deg) translate(-2px, -2px);
+      box-shadow: 12px 12px 0 var(--mp-black);
+    }
+
+    .slash-card .material-icons {
+      font-size: 1.6rem;
+      color: var(--mp-black);
+      background: var(--mp-yellow);
+      border: 2px solid var(--mp-black);
+      padding: 0.3rem;
+      box-shadow: var(--mp-shadow-sm);
+      flex-shrink: 0;
+      transform: rotate(-5deg);
+    }
+    .slash-card:nth-child(4n+1) .material-icons { background: var(--mp-turquoise); }
+    .slash-card:nth-child(4n+3) .material-icons { background: var(--mp-white); }
+
+    .slash-card__name {
+      font-family: 'Consolas', 'SFMono-Regular', monospace;
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--mp-black);
+      text-transform: none;
+    }
+    .slash-card:nth-child(4n+3) .slash-card__name { color: var(--mp-white); }
+    .slash-card__desc {
+      font-size: 0.85rem;
+      color: var(--mp-black);
+      margin-top: 0.2rem;
+      font-weight: 400;
+    }
+    .slash-card:nth-child(4n+3) .slash-card__desc { color: rgba(255,255,255,0.9); }
+
+    /* 設定セクション */
+    .section--settings { background: var(--mp-cream); }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2.5rem;
+      margin-top: 2.5rem;
+    }
+
+    .setting-card {
+      background: var(--mp-white);
+      border: 3px solid var(--mp-black);
+      padding: 2rem;
+      box-shadow: var(--mp-shadow);
+      transform: rotate(-1.5deg);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+    .setting-card:nth-child(4n+1) { background: var(--mp-yellow); transform: rotate(-2deg); }
+    .setting-card:nth-child(4n+2) { background: var(--mp-white); transform: rotate(1.5deg); }
+    .setting-card:nth-child(4n+3) { background: var(--mp-pink); transform: rotate(-1deg); }
+    .setting-card:nth-child(4n+4) { background: var(--mp-cream); transform: rotate(2deg); }
+    .setting-card:hover {
+      transform: rotate(-3deg) translate(-2px, -2px);
+      box-shadow: 12px 12px 0 var(--mp-black);
+    }
+
+    .setting-card__icon {
+      font-size: 2rem;
+      color: var(--mp-black);
+      margin-bottom: 0.75rem;
+    }
+    .setting-card__icon .material-icons {
+      font-size: 2rem;
+      color: var(--mp-black);
+      background: var(--mp-turquoise);
+      border: 3px solid var(--mp-black);
+      padding: 0.4rem;
+      box-shadow: var(--mp-shadow-sm);
+      display: inline-block;
+      transform: rotate(-5deg);
+    }
+    .setting-card:nth-child(4n+1) .setting-card__icon .material-icons { background: var(--mp-pink); }
+    .setting-card:nth-child(4n+3) .setting-card__icon .material-icons { background: var(--mp-yellow); }
+
+    .setting-card h3 {
+      font-family: 'Archivo Black', 'Poppins', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+      color: var(--mp-black);
+      text-transform: uppercase;
+    }
+    .setting-card__desc {
+      font-size: 0.875rem;
+      color: var(--mp-black);
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+    .setting-card:nth-child(4n+3) .setting-card__desc { color: var(--mp-black); }
+
+    .setting-card__code {
+      background: var(--color-code-bg);
+      color: var(--color-code-fg);
+      border: 3px solid var(--mp-black);
+      padding: 1rem;
+      font-family: 'Consolas', 'SFMono-Regular', monospace;
+      font-size: 0.78rem;
+      line-height: 1.7;
+      overflow-x: auto;
+      box-shadow: var(--mp-shadow-sm);
+    }
+
+    .setting-card__list {
+      list-style: none;
+      font-size: 0.875rem;
+    }
+    .setting-card__list li {
+      padding: 0.5rem 0;
+      border-bottom: 2px solid var(--mp-black);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+    }
+    .setting-card__list li:last-child { border-bottom: none; }
+    .setting-card__list .material-icons {
+      font-size: 1rem;
+      background: var(--mp-yellow);
+      border: 2px solid var(--mp-black);
+      padding: 0.2rem;
+      box-shadow: 2px 2px 0 var(--mp-black);
+      transform: rotate(-3deg);
+    }
+
+    .model-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 900;
+      padding: 0.15rem 0.5rem;
+      border: 2px solid var(--mp-black);
+      background: var(--mp-pink);
+      color: var(--mp-white);
+      margin-left: 0.4rem;
+      vertical-align: middle;
+      font-family: 'Archivo Black', sans-serif;
+      box-shadow: 2px 2px 0 var(--mp-black);
+    }
+    .model-badge--accent { background: var(--mp-turquoise); color: var(--mp-black); }
+    .model-badge--gray { background: var(--mp-purple); color: var(--mp-white); }
+
+    /* フッター */
+    .footer {
+      background: var(--mp-black);
+      color: var(--mp-white);
+      border-top: 6px solid var(--mp-pink);
+      text-align: center;
+      padding: 3rem 2rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-family: 'Archivo Black', sans-serif;
+    }
+    .footer__copy { color: rgba(255,255,255,0.7); }
+
+    /* 装飾パーツ */
+    .mp-deco { position: fixed; z-index: -1; pointer-events: none; }
+    .mp-deco--circle-pink {
+      top: 20%; left: 5%;
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--mp-pink);
+      animation: mp-spin 14s linear infinite;
+    }
+    .mp-deco--triangle-turquoise {
+      top: 60%; right: 8%;
+      width: 0; height: 0;
+      border-left: 40px solid transparent;
+      border-right: 40px solid transparent;
+      border-bottom: 70px solid var(--mp-turquoise);
+      animation: mp-wobble 9s ease-in-out infinite;
+    }
+    .mp-deco--zigzag-yellow {
+      top: 35%; right: 3%;
+      width: 120px; height: 24px;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 24'><polyline points='0,12 15,0 30,24 45,0 60,24 75,0 90,24 105,0 120,12' fill='none' stroke='%23FFDE3D' stroke-width='6'/></svg>");
+      background-repeat: no-repeat;
+      transform: rotate(-10deg);
+      animation: mp-wobble 11s ease-in-out infinite;
+    }
+    .mp-deco--dot-purple {
+      bottom: 12%; left: 10%;
+      width: 100px; height: 100px;
+      background-image: radial-gradient(circle, var(--mp-purple) 5px, transparent 6px);
+      background-size: 20px 20px;
+    }
+    .mp-deco--square-red {
+      top: 8%; right: 18%;
+      width: 50px; height: 50px;
+      background: var(--mp-red);
+      transform: rotate(20deg);
+      animation: mp-spin 18s linear infinite reverse;
+    }
+
+    @keyframes mp-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes mp-wobble {
+      0%, 100% { transform: rotate(-10deg) translateY(0); }
+      50%       { transform: rotate(-6deg) translateY(-8px); }
+    }
+
+    /* .fi スクロールアニメーション（維持） */
+    .fi {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fi.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* レスポンシブ */
+    @media (max-width: 768px) {
+      .section { padding: 3.5rem 1.25rem; }
+      .section--hero { min-height: 70vh; padding-top: 6rem; }
+      .section--hero h1 { font-size: clamp(2.5rem, 12vw, 4rem); padding: 0.4rem 1rem; }
+      .slash-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+      .settings-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .nav { padding: 0 1rem; overflow-x: auto; }
+      .nav__links { gap: 1rem; }
+      .nav__links a { font-size: 0.75rem; }
+      .mp-deco--zigzag-yellow, .mp-deco--square-red { display: none; }
+      .slash-card, .setting-card { transform: rotate(-1deg); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ナビゲーション -->
+<header class="nav" id="nav">
+  <a class="nav__logo" href="#">
+    <span class="material-icons">terminal</span>
+    Claude Code
+  </a>
+  <nav>
+    <ul class="nav__links">
+      <li><a href="#commands">コマンド</a></li>
+      <li><a href="#slash">スラッシュ</a></li>
+      <li><a href="#settings">設定</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+
+  <!-- Hero -->
+  <section class="section section--hero">
+    <div class="section__inner">
+      <div class="hero__badge">Personal Reference</div>
+      <h1>Claude Code 説明書</h1>
+      <p class="section__lead">CLIツールのコマンド・スラッシュコマンド・便利な設定をまとめたリファレンスガイド</p>
+      <div class="hero__meta">
+        <span class="hero__meta-item"><span class="material-icons">calendar_today</span>更新：2026-05-27</span>
+        <span class="hero__meta-item"><span class="material-icons">devices</span>Windows / Mac / Linux</span>
+        <span class="hero__meta-item"><span class="material-icons">info</span>Claude Code CLI</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLIコマンド -->
+  <section class="section section--commands" id="commands">
+    <div class="section__inner fi">
+      <h2 class="section__title"><span class="material-icons">terminal</span>CLIコマンド一覧</h2>
+      <p class="section__lead">ターミナルから直接実行するコマンドです。</p>
+
+      <div class="cmd-group">
+        <div class="cmd-group__label">起動・基本</div>
+        <table class="cmd-table">
+          <thead>
+            <tr><th>コマンド</th><th>説明</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>claude</code></td>
+              <td>インタラクティブモードで起動</td>
+            </tr>
+            <tr>
+              <td><code>claude "指示"</code></td>
+              <td>指示を1回実行して終了</td>
+            </tr>
+            <tr>
+              <td><code>claude -p "指示"</code></td>
+              <td>非インタラクティブ出力（パイプ・スクリプト向け）</td>
+            </tr>
+            <tr>
+              <td><code>claude --version</code></td>
+              <td>バージョン確認</td>
+            </tr>
+            <tr>
+              <td><code>claude --help</code></td>
+              <td>ヘルプ表示</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cmd-group">
+        <div class="cmd-group__label">会話の継続・再開</div>
+        <table class="cmd-table">
+          <thead>
+            <tr><th>コマンド</th><th>説明</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>claude -c</code></td>
+              <td>直前の会話を継続して起動</td>
+            </tr>
+            <tr>
+              <td><code>claude --continue</code></td>
+              <td>同上（長いオプション）</td>
+            </tr>
+            <tr>
+              <td><code>claude --resume</code></td>
+              <td>過去の会話を一覧から選んで再開</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cmd-group">
+        <div class="cmd-group__label">モデル・出力</div>
+        <table class="cmd-table">
+          <thead>
+            <tr><th>コマンド</th><th>説明</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>claude --model &lt;model-id&gt;</code></td>
+              <td>使用モデルを指定して起動</td>
+            </tr>
+            <tr>
+              <td><code>claude --output-format json</code></td>
+              <td>出力をJSON形式にする（<code>-p</code>と併用）</td>
+            </tr>
+            <tr>
+              <td><code>claude --output-format stream-json</code></td>
+              <td>ストリーミングJSON形式で出力</td>
+            </tr>
+            <tr>
+              <td><code>claude --max-turns 5</code></td>
+              <td>自律実行の最大ターン数を指定</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cmd-group">
+        <div class="cmd-group__label">権限・ツール</div>
+        <table class="cmd-table">
+          <thead>
+            <tr><th>コマンド</th><th>説明</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>claude --allowedTools "Bash,Edit"</code></td>
+              <td>使用を許可するツールを指定</td>
+            </tr>
+            <tr>
+              <td><code>claude --dangerouslySkipPermissions</code></td>
+              <td>確認プロンプトをすべてスキップ（自動化用・要注意）</td>
+            </tr>
+            <tr>
+              <td><code>claude --add-dir /path</code></td>
+              <td>アクセスを許可するディレクトリを追加</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- スラッシュコマンド -->
+  <section class="section section--slash" id="slash">
+    <div class="section__inner fi">
+      <h2 class="section__title"><span class="material-icons">flash_on</span>スラッシュコマンド</h2>
+      <p class="section__lead">会話中に <code>/</code> から始めて入力するコマンドです。</p>
+      <div class="slash-grid">
+
+        <div class="slash-card">
+          <span class="material-icons">help_outline</span>
+          <div>
+            <div class="slash-card__name">/help</div>
+            <div class="slash-card__desc">使用可能なコマンド一覧を表示</div>
+          </div>
+        </div>
+
+        <div class="slash-card">
+          <span class="material-icons">delete_sweep</span>
+          <div>
+            <div class="slash-card__name">/clear</div>
+            <div class="slash-card__desc">会話履歴をクリアして新しいセッション開始</div>
+          </div>
+        </div>
+
+        <div class="slash-card">
+          <span class="material-icons">compress</span>
+          <div>
+            <div class="slash-card__name">/compact</div>
+            <div class="slash-card__desc">コンテキストを圧縮してトークンを節約</div>
+          </div>
+        </div>
+
+        <div class="slash-card">
+          <span class="material-icons">settings</span>
+          <div>
+            <div class="slash-card__name">/config</div>
+            <div class="slash-card__desc">設定の表示・変更（テーマ・モデルなど）</div>
+          </div>
+        </div>
+
+        <div class="slash-card">
+          <span class="material-icons">payments</span>
+          <div>
+            <div class="slash-card__name">/cost</div>
+            <div class="slash-card__desc">現在のセッションのトークン数・コストを確認</div>
+          </div>
+        </div>
+
+        <div class="slash-card">
+          <span class="material-icons">health_and_safety</span>
+          <div>
+            <div class="slash-card__name">/doctor</div>
+            <div class="slash-card__desc">環境・設定の診断を実行</div>
+          </div>
+        </div>
+
+        <div class="slash-card">
+          <span class="material-icons">note_add</span>
+          <div>
+            <div class="slash-card__name">/init</div>
+            <div class="slash-card__desc">プロジェクトの CLAUDE.md を自動生成</div>
+          </div>
+        </div>
+
+        <div class="slash-card">
+          <span class="material-icons">smart_toy</span>
+          <div>
+            <div class="slash-card__name">/model</div>
+            <div class="slash-card__desc">使用モデルをセッション内で切り替え</div>
+          </div>
+        </div>
+
+        <div class="slash-card">
+          <span class="material-icons">rate_review</span>
+          <div>
+            <div class="slash-card__name">/review</div>
+            <div class="slash-card__desc">現在の差分をコードレビュー</div>
+          </div>
+        </div>
+
+        <div class="slash-card">
+          <span class="material-icons">memory</span>
+          <div>
+            <div class="slash-card__name">/memory</div>
+            <div class="slash-card__desc">メモリファイルの表示・編集</div>
+          </div>
+        </div>
+
+        <div class="slash-card">
+          <span class="material-icons">bolt</span>
+          <div>
+            <div class="slash-card__name">/fast</div>
+            <div class="slash-card__desc">Opusモデルの高速モードを切り替え</div>
+          </div>
+        </div>
+
+        <div class="slash-card">
+          <span class="material-icons">logout</span>
+          <div>
+            <div class="slash-card__name">/exit</div>
+            <div class="slash-card__desc">Claude Code を終了</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 便利な設定 -->
+  <section class="section section--settings" id="settings">
+    <div class="section__inner fi">
+      <h2 class="section__title"><span class="material-icons">tune</span>便利な設定</h2>
+      <p class="section__lead">カスタマイズと動作制御のための設定ファイル・環境変数です。</p>
+      <div class="settings-grid">
+
+        <div class="setting-card">
+          <div class="setting-card__icon"><span class="material-icons">description</span></div>
+          <h3>CLAUDE.md</h3>
+          <p class="setting-card__desc">Claudeへの「お願い書き」。プロジェクトや作業スタイルの指示を記述する。<br>グローバル：<code>~/.claude/CLAUDE.md</code><br>プロジェクト：<code>.claude/CLAUDE.md</code></p>
+          <div class="setting-card__code"># プロジェクト指示の例
+## コーディング規約
+- TypeScript strict mode を使う
+- コメントは日本語で書く
+
+## 禁止事項
+- console.log を本番コードに残さない</div>
+        </div>
+
+        <div class="setting-card">
+          <div class="setting-card__icon"><span class="material-icons">security</span></div>
+          <h3>settings.json — パーミッション</h3>
+          <p class="setting-card__desc">ツール実行の許可・拒否を設定。確認プロンプトを減らせる。<br>場所：<code>.claude/settings.json</code></p>
+          <div class="setting-card__code">{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(npm run *)",
+      "Bash(ls *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)"
+    ]
+  }
+}</div>
+        </div>
+
+        <div class="setting-card">
+          <div class="setting-card__icon"><span class="material-icons">smart_toy</span></div>
+          <h3>利用可能なモデル</h3>
+          <p class="setting-card__desc">用途に応じてモデルを使い分ける。</p>
+          <ul class="setting-card__list">
+            <li>
+              <span class="material-icons">star</span>
+              <span><code>claude-opus-4-7</code><span class="model-badge">最高性能</span></span>
+            </li>
+            <li>
+              <span class="material-icons">speed</span>
+              <span><code>claude-sonnet-4-6</code><span class="model-badge model-badge--accent">バランス</span></span>
+            </li>
+            <li>
+              <span class="material-icons">flash_on</span>
+              <span><code>claude-haiku-4-5-20251001</code><span class="model-badge model-badge--gray">高速・軽量</span></span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="setting-card">
+          <div class="setting-card__icon"><span class="material-icons">webhook</span></div>
+          <h3>Hooks — 自動実行</h3>
+          <p class="setting-card__desc">ツール実行前後に自動でシェルコマンドを走らせる。<code>settings.json</code> で設定。</p>
+          <div class="setting-card__code">{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "Write|Edit",
+      "hooks": [{
+        "type": "command",
+        "command": "npm run lint --silent"
+      }]
+    }]
+  }
+}</div>
+        </div>
+
+        <div class="setting-card">
+          <div class="setting-card__icon"><span class="material-icons">key</span></div>
+          <h3>環境変数</h3>
+          <p class="setting-card__desc">APIキーや動作制御に使う主要な環境変数。</p>
+          <ul class="setting-card__list">
+            <li><span class="material-icons">vpn_key</span><code>ANTHROPIC_API_KEY</code> — APIキー</li>
+            <li><span class="material-icons">cloud</span><code>ANTHROPIC_BASE_URL</code> — エンドポイント変更</li>
+            <li><span class="material-icons">bug_report</span><code>CLAUDE_CODE_DEBUG</code> — デバッグログ出力</li>
+            <li><span class="material-icons">terminal</span><code>BASH_DEFAULT_TIMEOUT_MS</code> — Bashタイムアウト</li>
+          </ul>
+        </div>
+
+        <div class="setting-card">
+          <div class="setting-card__icon"><span class="material-icons">integration_instructions</span></div>
+          <h3>MCP サーバー</h3>
+          <p class="setting-card__desc">外部ツールをClaudeに接続する拡張機構。<code>settings.json</code> に追加。</p>
+          <div class="setting-card__code">{
+  "mcpServers": {
+    "my-server": {
+      "command": "npx",
+      "args": ["-y", "@my/mcp-server"],
+      "env": {
+        "API_KEY": "..."
+      }
+    }
+  }
+}</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p class="footer__copy">© 2026 Personal Reference. Claude Code 説明書</p>
+</footer>
+
+<div class="mp-deco mp-deco--circle-pink"></div>
+<div class="mp-deco mp-deco--triangle-turquoise"></div>
+<div class="mp-deco mp-deco--zigzag-yellow"></div>
+<div class="mp-deco mp-deco--dot-purple"></div>
+<div class="mp-deco mp-deco--square-red"></div>
+
+<script>
+  // ナビ スクロール時スタイル変更（Memphis版はナビ固定黒なのでクラス切り替えは残すだけ）
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('is-scrolled', window.scrollY > 40);
+  });
+
+  // スクロールアニメーション
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('is-visible');
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fi').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
